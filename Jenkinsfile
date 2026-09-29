@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     stages {
@@ -13,11 +12,11 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Testing application...'
+                echo 'Checking application files...'
 
-                sh '''
-                    test -f index.html
-                    test -f style.css
+                bat '''
+                    if not exist index.html exit /b 1
+                    if not exist style.css exit /b 1
                 '''
             }
         }
@@ -26,20 +25,20 @@ pipeline {
             steps {
                 echo 'Deploying application...'
 
-                sh '''
-                    sudo rm -rf /var/www/html/*
-                    sudo cp -r ./* /var/www/html/
+                bat '''
+                    if not exist C:\\JenkinsDeploy mkdir C:\\JenkinsDeploy
+                    xcopy /E /Y /I . C:\\JenkinsDeploy
                 '''
             }
         }
 
         stage('Verify') {
             steps {
-                echo 'Checking deployment...'
+                echo 'Verifying deployment...'
 
-                sh '''
-                    test -f /var/www/html/index.html
-                    test -f /var/www/html/style.css
+                bat '''
+                    if not exist C:\\JenkinsDeploy\\index.html exit /b 1
+                    if not exist C:\\JenkinsDeploy\\style.css exit /b 1
                 '''
             }
         }
